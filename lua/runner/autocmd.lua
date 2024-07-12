@@ -9,9 +9,13 @@ local function initBuffer()
 
   if not ftConfig then return end -- If a language is not setup do nothing
 
-  vim.api.nvim_buf_set_var(0, "runnerFiles",
-    { defaultFiles = ftConfig.defaultFiles(), userFiles = ftConfig.userFiles() })
+  vim.api.nvim_buf_set_var(0, "runnerArgs",
+    { default = require("runner.args"), ft = ftConfig.default(), user = ftConfig.user() })
 
+  vim.api.nvim_buf_create_user_command(0, "Runargs", function(args)
+    local conf = vim.api.nvim_buf_get_var(0, "runnerFiles")
+    conf.args = args.args
+  end, { nargs = "*" })
   --P(vim.api.nvim_buf_get_var(0, "runnerFiles"))
 
   --P(globalConfig)
@@ -30,6 +34,5 @@ local function initBuffer()
 end
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
-  --pattern = { "*.c", "*.h" },
   callback = initBuffer
 })

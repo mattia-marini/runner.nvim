@@ -1,25 +1,24 @@
+local conf = require("runner.defaults.common")
+
 return {
   defaultFiles = function()
     local runnerFiles = {
-      mainFile = vim.api.nvim_buf_get_name(0),
-      mainFileDir = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
-      mainFileName = vim.fs.basename(vim.api.nvim_buf_get_name(0))
+      currFile = vim.api.nvim_buf_get_name(0),
+      currFileDir = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
+      currFileName = vim.fs.basename(vim.api.nvim_buf_get_name(0))
     }
     return runnerFiles
   end,
   userFiles = function()
   end,
   build = function(defaultFiles, userFiles)
-    return "clang++ " .. defaultFiles.mainFile
+    return "clang++ " .. defaultFiles.currFile
   end,
   run = function(defaultFiles, userFiles)
     return "./a.out"
   end,
-  buildAndrun = function(defaultFiles, userFiles)
-    return "cd " .. defaultFiles.mainFileDir .. " && clang++ " .. defaultFiles.mainFileName .. " && ./a.out"
+  buildAndRun = function(placeHolders)
+    return "cd " ..
+        placeHolders.default.currFileDir .. " && clang++ " .. placeHolders.default.currFileName .. " && ./a.out"
   end,
-  mappings = {
-    ["<Space>r"] = require("runner.run").start,
-    ["<Space>R"] = require("runner.run").stop
-  }
 }

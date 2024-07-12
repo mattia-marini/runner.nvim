@@ -16,6 +16,7 @@ return {
     return "./a.out"
   end,
   buildAndRun = function(placeHolders)
-    return "cd " .. placeHolders.default.currFileDir .. " && lua " .. placeHolders.default.currFileName
+    return "cd " ..
+    placeHolders.default.currFileDir .. " && ./" .. placeHolders.default.currFileName .. " " .. placeHolders.args
   end
 }
