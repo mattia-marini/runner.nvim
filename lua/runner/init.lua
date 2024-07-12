@@ -1,10 +1,18 @@
 require("runner.autocmd")
 
+local function parseConfig(t1, t2)
+  for key, val in pairs(t2) do
+    if type(val) == "table" then
+      parseConfig(t1[key], val)
+    else
+      t1[key] = val
+    end
+  end
+end
+
 return {
   config = function(user_conf)
     local config_table = require("runner.config")
-    for key, value in pairs(user_conf) do
-      config_table[key] = value
-    end
+    parseConfig(config_table, user_conf)
   end
 }

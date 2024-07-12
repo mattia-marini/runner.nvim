@@ -9,17 +9,13 @@ return {
   end,
   userFiles = function()
   end,
-  build = function(defaultFiles, userFiles)
+   build = function(defaultFiles, userFiles)
     return "clang++ " .. defaultFiles.mainFile
   end,
   run = function(defaultFiles, userFiles)
     return "./a.out"
   end,
   buildAndrun = function(defaultFiles, userFiles)
-    return "cd " .. defaultFiles.mainFileDir .. " && clang++ " .. defaultFiles.mainFileName .. " && ./a.out"
-  end,
-  mappings = {
-    ["<Space>r"] = require("runner.run").start,
-    ["<Space>R"] = require("runner.run").stop
-  }
+    return "cd " .. defaultFiles.mainFileDir .. " && lua " .. defaultFiles.mainFileName
+  end
 }
