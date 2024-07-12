@@ -1,21 +1,26 @@
+---@class BuildConfig
+---@field userArgs fun()
+---@field build fun(args: RunnerArgs):string
+---@field run fun(args: RunnerArgs):string
+---@field buildAndRun fun(args: RunnerArgs):string
+---@field mappings table
+
+---@type {new: fun(nil):BuildConfig}
 return {
-  default = function()
-    local runnerFiles = {
-      currFile = vim.api.nvim_buf_get_name(0),
-      currFileDir = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
-      currFileName = vim.fs.basename(vim.api.nvim_buf_get_name(0))
+  new = function()
+    return {
+      userArgs = function()
+      end,
+      build = function(args)
+        return ""
+      end,
+      run = function(args)
+        return ""
+      end,
+      buildAndRun = function(args)
+        return ""
+      end,
+      mappings = {}
     }
-    return runnerFiles
-  end,
-  user= function()
-  end,
-  build = function(defaultFiles, userFiles)
-    return ""
-  end,
-  run = function(defaultFiles, userFiles)
-    return ""
-  end,
-  buildAndRun = function(placeHolders)
-    return ""
   end
 }

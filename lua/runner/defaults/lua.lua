@@ -1,21 +1,6 @@
-return {
-  defaultFiles = function()
-    local runnerFiles = {
-      currFile = vim.api.nvim_buf_get_name(0),
-      currFileDir = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
-      currFileName = vim.fs.basename(vim.api.nvim_buf_get_name(0))
-    }
-    return runnerFiles
-  end,
-  userFiles = function()
-  end,
-  build = function(defaultFiles, userFiles)
-    return "clang++ " .. defaultFiles.currFile
-  end,
-  run = function(defaultFiles, userFiles)
-    return "./a.out"
-  end,
-  buildAndRun = function(placeHolders)
-    return "cd " .. placeHolders.default.currFileDir .. " && lua " .. placeHolders.default.currFileName
-  end
-}
+local rv = require("runner.defaults.common").new()
+rv.buildAndRun =
+    function(args)
+      return "lua " .. args.default.currFile .. " " .. args.default.args
+    end
+return rv

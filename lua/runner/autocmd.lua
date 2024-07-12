@@ -5,20 +5,28 @@ local function initBuffer()
   local ft = vim.api.nvim_get_option_value("filetype", {})
 
   local globalConfig = require("runner.config")
+
+  ---@type BuildConfig
   local ftConfig = globalConfig[ft]
 
   if not ftConfig then return end -- If a language is not setup do nothing
 
-  vim.api.nvim_buf_set_var(0, "runnerArgs",
-    { default = require("runner.args"), ft = ftConfig.default(), user = ftConfig.user() })
+  ---@class RunnerArgs
+  local runnerArgs = {
+    ---@type DefaultArgs
+    default = require("runner.args"),
+    ---@type table
+    user = ftConfig.userArgs()
+  }
+  vim.api.nvim_buf_set_var(0, "runnerArgs", runnerArgs)
+
 
   vim.api.nvim_buf_create_user_command(0, "Runargs", function(args)
-    local conf = vim.api.nvim_buf_get_var(0, "runnerFiles")
-    conf.args = args.args
+    local conf = vim.api.nvim_buf_get_var(0, "runnerArgs")
+    conf.default.args = args.args
+    vim.api.nvim_buf_set_var(0, "runnerArgs", conf)
   end, { nargs = "*" })
-  --P(vim.api.nvim_buf_get_var(0, "runnerFiles"))
 
-  --P(globalConfig)
   if globalConfig.mappings then
     for key, val in pairs(globalConfig.mappings) do
       vim.api.nvim_buf_set_keymap(0, "n", key, "", { callback = val })
@@ -26,10 +34,8 @@ local function initBuffer()
   end
 
   --P(ftConfig)
-  if ftConfig.mappings then
-    for key, val in pairs(ftConfig.mappings) do
-      vim.api.nvim_buf_set_keymap(0, "n", key, "", { callback = val })
-    end
+  for key, val in pairs(ftConfig.mappings) do
+    vim.api.nvim_buf_set_keymap(0, "n", key, "", { callback = val })
   end
 end
 
