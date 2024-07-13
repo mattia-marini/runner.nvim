@@ -6,6 +6,7 @@ local function initBuffer()
 
   local globalConfig = require("runner.config")
 
+  print("autocmd")
   ---@type BuildConfig
   local ftConfig = globalConfig[ft]
 
@@ -14,7 +15,7 @@ local function initBuffer()
   ---@class RunnerArgs
   local runnerArgs = {
     ---@type DefaultArgs
-    default = require("runner.args"),
+    default = require("runner.args").new(),
     ---@type table
     user = ftConfig.userArgs()
   }
