@@ -5,6 +5,7 @@ return {
   },
   cpp = require("runner.defaults.cpp"),
   c = require("runner.defaults.c"),
+  javascript  = require("runner.defaults.javascript"),
   lua = require("runner.defaults.lua"),
   sh = require("runner.defaults.sh")
 }

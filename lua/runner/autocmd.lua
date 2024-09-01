@@ -6,7 +6,7 @@ local function initBuffer()
 
   local globalConfig = require("runner.config")
 
-  print("autocmd")
+  -- print("autocmd")
   ---@type BuildConfig
   local ftConfig = globalConfig[ft]
 
