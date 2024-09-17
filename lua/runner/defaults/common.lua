@@ -1,4 +1,5 @@
 ---@class BuildConfig
+---@field supported boolean
 ---@field userArgs fun()
 ---@field build fun(args: RunnerArgs):string
 ---@field run fun(args: RunnerArgs):string
@@ -9,6 +10,7 @@
 return {
   new = function()
     return {
+      supported = true,
       userArgs = function()
       end,
       build = function(args)
