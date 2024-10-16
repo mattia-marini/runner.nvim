@@ -8,7 +8,7 @@ local function initBuffer()
 
   -- print("autocmd")
   ---@type BuildConfig
-  local ftConfig = globalConfig[ft]
+  local ftConfig = globalConfig.lang[ft]
 
   if not ftConfig then return end -- If a language is not setup do nothing
   if not ftConfig.supported then print("The current filetype is not supported out of the box. Add the supported field in the config if you know what you are doing") return end
