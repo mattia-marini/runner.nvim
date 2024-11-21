@@ -1,17 +1,29 @@
 local function initBuffer()
   -- print(string.format('event fired: %s', vim.inspect(ev)))
-  --print("Detectato filetype ")
+  -- print("Detectato filetype ")
 
   local ft = vim.api.nvim_get_option_value("filetype", {})
 
   local globalConfig = require("runner.config")
 
-  -- print("autocmd")
   ---@type BuildConfig
   local ftConfig = globalConfig.lang[ft]
+  -- print("filetype: " .. ft)
+  -- print(vim.inspect(globalConfig.lang[ft]))
+  -- print("ftConfig: " .. vim.inspect(ftConfig))
 
-  if not ftConfig then return end -- If a language is not setup do nothing
-  if not ftConfig.supported then print("The current filetype is not supported out of the box. Add the supported field in the config if you know what you are doing") return end
+  if not ftConfig then -- If a language is not setup do nothing
+    local ignored_fts = {
+      oil = true,
+      cmp_menu = true,
+    }
+    if not ignored_fts[ft] then
+      print(
+        "[runner.nvim] The current filetype (" ..
+        ft .. ") is not supported out of the box. Add the supported field in the config if you know what you are doing")
+    end
+    return
+  end
 
   ---@class RunnerArgs
   local runnerArgs = {
