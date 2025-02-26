@@ -6,6 +6,8 @@ local function initBuffer()
 
   local globalConfig = require("runner.config")
 
+  local dprint = require("runner.utils").dprint
+
   ---@type BuildConfig
   local ftConfig = globalConfig.lang[ft]
   -- print("filetype: " .. ft)
@@ -18,9 +20,10 @@ local function initBuffer()
       cmp_menu = true,
     }
     if not ignored_fts[ft] then
-      print(
+      dprint(
         "[runner.nvim] The current filetype (" ..
-        ft .. ") is not supported out of the box. Add the supported field in the config if you know what you are doing")
+        ft .. ") is not supported out of the box. Add the supported field in the config if you know what you are doing"
+      )
     end
     return
   end
