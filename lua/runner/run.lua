@@ -18,16 +18,7 @@ local function runInTerminalById(winid, cmd)
 end
 
 local function runInTerminal(cmd)
-  local term = getActiveTerminalWinId()
-  local currWin = vim.api.nvim_get_current_win()
-
-  if term == nil then
-    vim.cmd([[vsplit | terminal]] .. "\n")
-    term = getActiveTerminalWinId()
-  end
-
-  runInTerminalById(term, cmd)
-  vim.schedule(function() vim.api.nvim_set_current_win(currWin) end)
+  vim.cmd("vsplit | terminal " .. cmd .. "\n")
 end
 
 local function stopExecution()
