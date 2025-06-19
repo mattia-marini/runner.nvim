@@ -20,9 +20,10 @@ local function runInTerminalById(winid, cmd)
 end
 
 local function runInTerminal(cmd)
+  local text_file_buff = vim.api.nvim_win_get_buf(0);
   vim.cmd("vnew")
   local channel_id = vim.fn.termopen(cmd)
-  vim.api.nvim_buf_set_var(0, "runnerTermChannelId", channel_id)
+  vim.api.nvim_buf_set_var(text_file_buff, "runnerTermChannelId", channel_id)
 end
 
 local function stopExecution()
