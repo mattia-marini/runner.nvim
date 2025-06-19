@@ -39,7 +39,8 @@ local function stopExecution()
 
   vim.fn.jobstop(term_infos.ch)
   vim.api.nvim_win_del_var(term_win_id, "runnerTermInfos")
-  vim.api.nvim_win_close(term_win_id, false)
+  vim.api.nvim_buf_delete(vim.api.nvim_win_get_buf(term_win_id), { force = true })
+  -- vim.api.nvim_win_close(term_win_id, true)
 end
 
 local function runWithBufferConfig()
