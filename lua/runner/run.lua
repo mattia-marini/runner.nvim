@@ -26,7 +26,6 @@ local function runInTerminal(cmd)
     return
   end
 
-  local channel_id = termInfos.ch
 
   local text_file_buff = vim.api.nvim_get_current_buf();
   vim.cmd("vnew")
