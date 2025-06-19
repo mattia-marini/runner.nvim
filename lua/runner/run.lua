@@ -1,3 +1,5 @@
+vim.api.nvim_buf_set_var(0, "runnerTermChannelId", nil);
+
 local function getActiveTerminalWinId()
   local wins = vim.api.nvim_list_wins()
   local curr_tab = vim.api.nvim_get_current_tabpage()
@@ -18,18 +20,26 @@ local function runInTerminalById(winid, cmd)
 end
 
 local function runInTerminal(cmd)
-  vim.cmd("vsplit | terminal " .. cmd .. "\n")
+  vim.cmd("vnew")
+  local channel_id = vim.fn.jobstart(cmd, { term = true })
+  vim.api.nvim_buf_set_var(0, "runnerTermChannelId", channel_id)
 end
 
 local function stopExecution()
-  local term = getActiveTerminalWinId()
-  local currWin = vim.api.nvim_get_current_win()
-  if term then
-    vim.api.nvim_set_current_win(term)
-    vim.cmd("startinsert")
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-c>", true, false, true), "n", false)
-  end
-  vim.schedule(function() vim.api.nvim_set_current_win(currWin) end)
+  vim.api.nvim_chan_send(vim.api.nvim_buf_get_var(0, "runnerTermChannelId"),
+    vim.api.nvim_replace_termcodes("<C-c>", true, false, true))
+  vim.api.nvim_buf_set_var(0, "runnerTermChannelId", nil);
+  --   local term = getActiveTerminalWinId()
+  --
+  --   local currWin = vim.api.nvim_get_current_win()
+  --
+  --
+  --   if term then
+  --     vim.api.nvim_set_current_win(term)
+  --     vim.cmd("startinsert")
+  --     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-c>", true, false, true), "n", false)
+  --   end
+  --   vim.schedule(function() vim.api.nvim_set_current_win(currWin) end)
 end
 
 local function runWithBufferConfig()
