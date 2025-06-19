@@ -21,7 +21,7 @@ end
 
 local function runInTerminal(cmd)
   vim.cmd("vnew")
-  local channel_id = vim.fn.jobstart(cmd, { term = true })
+  local channel_id = vim.fn.termopen(cmd)
   vim.api.nvim_buf_set_var(0, "runnerTermChannelId", channel_id)
 end
 
