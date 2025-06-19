@@ -20,6 +20,13 @@ local function runInTerminalById(winid, cmd)
 end
 
 local function runInTerminal(cmd)
+  local channel_id = vim.api.nvim_buf_get_var(0, "runnerTermChannelId")
+
+  if (channel_id ~= nil) then
+    vim.notify("A process is already running in this buffer", vim.log.levels.WARN)
+    return
+  end
+
   local text_file_buff = vim.api.nvim_win_get_buf(0);
   vim.cmd("vnew")
   local channel_id = vim.fn.termopen(cmd)
@@ -27,8 +34,15 @@ local function runInTerminal(cmd)
 end
 
 local function stopExecution()
-  vim.api.nvim_chan_send(vim.api.nvim_buf_get_var(0, "runnerTermChannelId"),
-    vim.api.nvim_replace_termcodes("<C-c>", true, false, true))
+  local channel_id = vim.api.nvim_buf_get_var(0, "runnerTermChannelId")
+  if (channel_id == nil) then
+    vim.notify("No running process to stop", vim.log.levels.WARN)
+    return
+  end
+
+  -- vim.api.nvim_chan_send(vim.api.nvim_buf_get_var(0, "runnerTermChannelId"),
+  --   vim.api.nvim_replace_termcodes("<C-c>", true, false, true))
+  vim.fn.jobstop(channel_id)
   vim.api.nvim_buf_set_var(0, "runnerTermChannelId", nil);
   --   local term = getActiveTerminalWinId()
   --
