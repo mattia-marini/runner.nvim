@@ -10,11 +10,8 @@ local function initBuffer()
 
   ---@type BuildConfig
   local ftConfig = globalConfig.lang[ft]
-  -- print("filetype: " .. ft)
-  -- print(vim.inspect(globalConfig.lang[ft]))
-  -- print("ftConfig: " .. vim.inspect(ftConfig))
 
-  if not ftConfig then -- If a language is not setup do nothing
+  if not ftConfig then
     local ignored_fts = {
       oil = true,
       cmp_menu = true,
@@ -28,15 +25,12 @@ local function initBuffer()
     return
   end
 
-  ---@class RunnerArgs
   local runnerArgs = {
-    ---@type DefaultArgs
     default = require("runner.args").new(),
-    ---@type table
     user = ftConfig.userArgs()
   }
-  vim.api.nvim_buf_set_var(0, "runnerArgs", runnerArgs)
 
+  vim.api.nvim_buf_set_var(0, "runnerArgs", runnerArgs)
 
   vim.api.nvim_buf_create_user_command(0, "Runargs", function(args)
     local conf = vim.api.nvim_buf_get_var(0, "runnerArgs")

@@ -6,7 +6,7 @@
 ---@field buildAndRun fun(args: RunnerArgs):string
 ---@field mappings table
 
----@type {new: fun(nil):BuildConfig}
+
 return {
   new = function()
     return {

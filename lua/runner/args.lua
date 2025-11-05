@@ -1,5 +1,4 @@
 return {
-  ---@return DefaultArgs
   new = function()
     return {
       currFile = vim.api.nvim_buf_get_name(0),

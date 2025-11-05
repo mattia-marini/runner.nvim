@@ -8,14 +8,15 @@ local function addDefaults(t1, t2)
 end
 
 -- Merges t2 values into t1
-local function join(t1, t2)
+local function join(t1, t2, schema)
   -- print(t1, t2)
-  if t1._extensible == true then
+  if schema._extendable == true then
     -- Right join, can add values
     for key, val in pairs(t2) do
       if type(val) == "table" then
-        if not t1[key] then t1[key] = { extensible = true } end -- extensible = true since having it disabled would cause to ignore each table
-        join(val, t2[key])
+        if not t1[key] then t1[key] = {} end
+        if not schema[key] then schema[key] = { _extendible = true } end
+        join(t1[key], val)
       else
         t1[key] = t2[key]
       end
@@ -34,10 +35,11 @@ local function join(t1, t2)
   end
 end
 
--- Wrapper around parseConfigRec
-local function parseConfig(t1, t2)
-  addDefaults(t1, t2) -- Adds defaults for languages of t2 in t1
-  join(t1, t2)        -- Merges t2 into t1
+
+local function parseConfig(user_conf)
+  local conf, schema = require("runner.config")
+  addDefaults(conf, user_conf) -- Adds defaults for languages of t2 in t1
+  join(t1, user_conf, schema)  -- Merges t2 into t1
 end
 
 
