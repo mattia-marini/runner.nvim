@@ -1,4 +1,4 @@
-local rv = require("runner.defaults.common").new()
+local rv = require("lua.runner.defaults.config.common").new()
 rv.buildAndRun =
     function(args)
       return {

@@ -10,4 +10,9 @@ function M.dprint(message, log_level)
   end
 end
 
+---@return table<string, BuildConfig>
+function M.get_curr_ft_config()
+  return require("runner.config").lang[vim.api.nvim_get_option_value("filetype", {})]
+end
+
 return M

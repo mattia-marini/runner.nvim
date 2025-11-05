@@ -1,7 +1,7 @@
 ---@class RunnerConfig
 ---@field mappings table<string, function> Key mappings for starting and stopping the runner
 ---@field debug boolean Enable debug mode
----@field lang table<string, BuildConfig> Language specific configurations
+---@field lang table<string, table<string, BuildConfig>> Language specific configurations
 
 ---@type RunnerConfig
 local M = {

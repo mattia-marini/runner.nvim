@@ -2,7 +2,7 @@ local function addDefaults(t1, t2)
   if not t2.lang then return end
   for key, _ in pairs(t2.lang) do
     if not t1.lang[key] then -- If there is no default then I use an empty template
-      t1.lang[key] = require("runner.defaults.common").new()
+      t1.lang[key] = require("lua.runner.defaults.config.common").new()
     end
   end
 end

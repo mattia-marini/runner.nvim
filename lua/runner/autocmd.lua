@@ -8,7 +8,6 @@ local function initBuffer()
 
   local dprint = require("runner.utils").dprint
 
-  ---@type BuildConfig
   local ftConfig = globalConfig.lang[ft]
 
   if not ftConfig then
