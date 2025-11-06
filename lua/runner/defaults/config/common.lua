@@ -6,7 +6,7 @@
 ---@field buildAndRun fun():string Function that returns the command to build and run the project
 ---@field mappings table<string, function> Key mappings specific to this language
 ---@field runargs table<string, string> Additional user-provided arguments, set with :Runargs
----@field runargsBase fun():string  Where to store the application args set by the :Runargs command.
+---@field runargsBase fun():string|"root"|"buffer"  Where to store the application args set by the :Runargs command.
 ---buffer: store in buffer variable
 ---root: store based on project root
 ---if a function is provided, it will be called to determine where to store the args
