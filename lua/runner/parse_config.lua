@@ -8,34 +8,69 @@ local function addDefaults(t1, t2)
 end
 
 -- Merges t2 values into t1
+-- local function join(t1, t2, schema)
+--   -- print(t1, t2)
+--   if schema._extendable == true then
+--     -- Right join, can add values
+--     for key, val in pairs(t2) do
+--       if type(val) == "table" then
+--         if not t1[key] then t1[key] = {} end
+--         if not schema[key] then schema[key] = { _extendible = true } end
+--         join(t1[key], val, schema[key])
+--       else
+--         t1[key] = t2[key]
+--       end
+--     end
+--   else
+--     -- Left join, can't add values, default
+--     for key, val in pairs(t1) do
+--       if t2[key] then
+--         if type(t2[key])
+--         if type(val) == "table" then
+--           join(val, t2[key], schema[key])
+--         else
+--           t1[key] = t2[key]
+--         end
+--       end
+--     end
+--   end
+-- end
+
+
+-- Merges t2 values into t1 following the provided schema
 local function join(t1, t2, schema)
-  -- print(t1, t2)
-  if schema._extendable == true then
-    -- Right join, can add values
-    for key, val in pairs(t2) do
-      if type(val) == "table" then
-        if not t1[key] then t1[key] = {} end
-        if not schema[key] then schema[key] = { _extendible = true } end
-        join(t1[key], val, schema[key])
-      else
-        t1[key] = t2[key]
-      end
-    end
-  else
-    -- Left join, can't add values, default
-    for key, val in pairs(t1) do
-      if t2[key] then
-        if type(t2[key])
-        if type(val) == "table" then
-          join(val, t2[key], schema[key])
-        else
-          t1[key] = t2[key]
-        end
-      end
+  --check normal keys (non  "_" keys)
+  for key, type in pairs(schema) do
+    if string.sub(key, 1, 1) ~= "_" then
+      if t2[key] ~= nil then t1[key] = t2[key] end
+      if t1[key]
     end
   end
+  -- if schema._extendable == true then
+  --   -- Right join, can add values
+  --   for key, val in pairs(t2) do
+  --     if type(val) == "table" then
+  --       if not t1[key] then t1[key] = {} end
+  --       if not schema[key] then schema[key] = { _extendible = true } end
+  --       join(t1[key], val, schema[key])
+  --     else
+  --       t1[key] = t2[key]
+  --     end
+  --   end
+  -- else
+  --   -- Left join, can't add values, default
+  --   for key, val in pairs(t1) do
+  --     if t2[key] then
+  --       if type(t2[key])
+  --       if type(val) == "table" then
+  --         join(val, t2[key], schema[key])
+  --       else
+  --         t1[key] = t2[key]
+  --       end
+  --     end
+  --   end
+  -- end
 end
-
 
 local function parseConfig(user_conf)
   local conf, schema = require("runner.config")
