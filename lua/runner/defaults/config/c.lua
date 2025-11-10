@@ -22,7 +22,7 @@ end
 local M = {}
 
 M.single_file = singleFile
-M.make = singleFile
+M.make = make
 M.active_conf = "single_file"
 
 return M

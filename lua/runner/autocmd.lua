@@ -2,9 +2,10 @@ local function initBuffer()
   -- print(string.format('event fired: %s', vim.inspect(ev)))
   -- print("Detectato filetype ")
 
+  if true then return end
   local ft = vim.api.nvim_get_option_value("filetype", {})
 
-  local globalConfig = require("runner.config")
+  local globalConfig = require("runner.config.config")
 
   local dprint = require("runner.utils").dprint
 

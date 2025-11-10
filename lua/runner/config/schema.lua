@@ -161,4 +161,19 @@ function T:map(map)
   return self
 end
 
+---Recursively merges values from `user_config` into `config`.
+---If a value in `user_config` is a table, it merges tables recursively. Otherwise, it overrides the value in `config`.
+---@param config table # The base config to merge values into (modified in place)
+---@param user_config table # The user-supplied config to merge in
+function T.join(config, user_config)
+  for key, val in pairs(user_config) do
+    if type(val) == "table" then
+      if not config[key] then config[key] = {} end
+      T.join(config[key], val)
+    else
+      config[key] = user_config[key]
+    end
+  end
+end
+
 return T
