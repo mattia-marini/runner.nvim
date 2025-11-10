@@ -1,6 +1,7 @@
 ---@class RunnerConfig
 ---@field mappings table<string, function> Key mappings for starting and stopping the runner
 ---@field debug boolean Enable debug mode
+---@field ignored_fts table<string, boolean> Filetypes on which runner.nvim should not activate
 ---@field lang table<string, table<string, BuildConfig>> Language specific configurations
 
 ---@type RunnerConfig
@@ -9,8 +10,12 @@ local config = {
     ["<Space>r"] = require("runner.run").start,
     ["<Space>R"] = require("runner.run").stop,
   },
+  ignored_fts = {
+    oil = true,
+    cmp_menu = true,
+  },
   debug = false,
-  lang = require("runner.defaults")
+  lang = require("runner.lang")
 }
 
 local T = require("runner.config.schema")
@@ -18,6 +23,7 @@ local T = require("runner.config.schema")
 local schema = T:new({
   mappings = T:new({}):values(T:new("function")),
   debug = T:new("boolean"),
+  ignored_fts = T:new({}):values(T:new("boolean"):map(function() return true end)),
   lang = T:new({})
       :values(
         T:new({
@@ -33,10 +39,8 @@ local schema = T:new({
             runargsBase = T:new("string")
           })
           :map(function(key, val, path)
-            -- print("mapping", vim.inspect(val))
-            local base_conf = require("runner.defaults.config.common").new()
+            local base_conf = require("runner.lang.common").new()
             T.join(base_conf, val)
-            print("Joined conf: ", vim.inspect(base_conf))
             return base_conf
           end)
         )

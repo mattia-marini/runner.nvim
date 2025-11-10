@@ -16,7 +16,7 @@ local M
 ---@class CSingleFile
 ---@field root fun(): string? The root of the current single file project
 
-M.common = require("runner.defaults.args.common")
+M.common = require("lua.runner.argss.common")
 
 function M.make.root() return vim.fs.root(0, "Makefile") end
 
