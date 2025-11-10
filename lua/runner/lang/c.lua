@@ -1,19 +1,20 @@
-local singleFile = require("runner.lang.common").new()
+local single_file = require("runner.lang.common").new()
 local make = require("runner.lang.common").new()
 
-singleFile.singleFile = true
-singleFile.root = function() return vim.api.nvim_buf_get_name(0) end
-singleFile.runargs = { executable = "a.out", args = "" }
-singleFile.buildAndRun = function()
+single_file.single_file = true
+single_file.root = function() return vim.api.nvim_buf_get_name(0) end
+single_file.runargs = { executable = "a.out", args = "" }
+single_file.build_and_run = function()
   local args = require("runner.args.c")
-  return "cd " .. args.singleFile.root() .. " && clang " .. args.common.currFileName() .. " -o " .. args.common.runargs()
+  return "cd " ..
+      args.single_file.root() .. " && clang " .. args.common.curr_file_name() .. " -o " .. args.common.runargs()
 end
 
 
-make.singleFile = false
+make.single_file = false
 make.root = function() return vim.fs.root(0, "Makefile") end
 make.runargs = { target = "ALL", args = "" }
-make.buildAndRun = function()
+make.build_and_run = function()
   local args = require("runner.args.c")
   return "cd " .. args.make.root() .. " && make " .. make.runargs.target .. " && ./" .. make.runargs.target
 end
@@ -21,7 +22,7 @@ end
 
 local M = {}
 
-M.single_file = singleFile
+M.single_file = single_file
 M.make = make
 M.active_conf = "single_file"
 

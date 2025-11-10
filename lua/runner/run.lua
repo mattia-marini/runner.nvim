@@ -1,3 +1,5 @@
+local dprint = require("runner.utils").dprint
+
 local function findTeminalWinIdForBuffer(buff)
   if buff == 0 then
     buff = vim.api.nvim_get_current_buf()
@@ -52,7 +54,19 @@ local function runWithBufferConfig()
   runInTerminal(cmd)
 end
 
+
+local function start()
+  local ft_config = require("runner.utils").get_curr_ft_active_config()
+  if not ft_config then
+    dprint("No configuration found for current filetype", vim.log.levels.ERROR)
+    return
+  end
+  print(ft_config.build_and_run())
+end
+
+local function stop()
+end
 return {
-  start = runWithBufferConfig,
-  stop = stopExecution
+  start = start,
+  stop = stop
 }

@@ -3,13 +3,14 @@ local function init_buffer()
   -- print("Detectato filetype ")
 
 
-  local dprint = require("runner.utils").dprint
+  local utils = require("runner.utils")
+  local dprint = utils.dprint
   local ft = vim.api.nvim_get_option_value("filetype", {})
   local global_config = require("runner.config.config")[1]
-  local ft_config = global_config.lang[ft]
+  local active_ft_config = utils.get_curr_ft_active_config()
 
 
-  if not ft_config then
+  if not active_ft_config then
     if not global_config.ignored_fts[ft] then
       dprint(
         "[runner.nvim] The current filetype (" ..
@@ -33,7 +34,7 @@ local function init_buffer()
   end
 
   --P(ftConfig)
-  for key, val in pairs(ft_config.mappings) do
+  for key, val in pairs(active_ft_config.mappings) do
     vim.api.nvim_buf_set_keymap(0, "n", key, "", { callback = val })
   end
 end
