@@ -61,7 +61,9 @@ local function start()
     dprint("No configuration found for current filetype", vim.log.levels.ERROR)
     return
   end
-  print(ft_config.build_and_run())
+  local args = require("runner.args")[vim.api.nvim_get_option_value("filetype", {})]
+  local runargs = ft_config.runargs
+  print(ft_config.build_and_run(args, runargs))
 end
 
 local function stop()

@@ -1,9 +1,9 @@
 ---@class BuildConfig
 ---@field single_file boolean Whether the language is a single file language
 ---@field root fun():string?|nil Function that returns the project root directory, or nil to use the default root detection
----@field build fun():string Function that returns the build command
----@field run fun():string Function that returns the command to run the already build project
----@field build_and_run fun():string Function that returns the command to build and run the project
+---@field build fun(args:table<string, any>, runargs: table<string, string>):string Function that returns the build command
+---@field run fun(args:table<string, any>, runargs: table<string, string>):string Function that returns the command to run the already build project
+---@field build_and_run fun(args:table<string, any>, runargs: table<string, string>):string Function that returns the command to build and run the project
 ---@field mappings table<string, function> Key mappings specific to this language
 ---@field runargs table<string, string> Additional user-provided arguments, set with :Runargs
 ---@field runargs_base fun():string|"root"|"buffer"  Where to store the application args set by the :Runargs command.
@@ -18,13 +18,13 @@ return {
     return {
       single_file = false,
       root = nil,
-      build = function()
+      build = function(args, runargs)
         return ""
       end,
-      run = function()
+      run = function(args, runargs)
         return ""
       end,
-      build_and_run = function()
+      build_and_run = function(args, runargs)
         return ""
       end,
       mappings = {},
