@@ -1,7 +1,7 @@
 local M = {};
 
 function M.dprint(message, log_level)
-  local global_config = require("runner.config.config")
+  local global_config = M.get_global_config()
   if global_config.debug then
     vim.notify(
       message,
@@ -10,9 +10,13 @@ function M.dprint(message, log_level)
   end
 end
 
+function M.get_global_config()
+  return require("runner.config")[1]
+end
+
 ---@return table<string, BuildConfig>
 function M.get_curr_ft_config()
-  return require("runner.config.config")[1].lang[vim.api.nvim_get_option_value("filetype", {})]
+  return M.get_global_config().lang[vim.api.nvim_get_option_value("filetype", {})]
 end
 
 ---@return BuildConfig?

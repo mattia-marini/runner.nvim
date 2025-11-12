@@ -14,8 +14,8 @@
 ---@alias RunargSpecifier string|boolean|string[]|ComplexRunargSpecifier
 
 ---@class ComplexRunargSpecifier
----@field value string|boolean|string[]
----@field default string|boolean|string[]
+---@field default string|boolean
+---@field value? string|boolean
 ---@field complete? function(arglead:string, cmdline:string, cursorpos:number):string[]
 ---@field check? function(value:string):boolean
 ---@field map? function(value:string):string

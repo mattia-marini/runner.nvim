@@ -25,7 +25,7 @@ end
 function T.parse_config(config, schema)
   ---@diagnostic disable-next-line: redefined-local
   local function parse_config_rec(config_key, config, schema, path)
-    -- print(path)
+    print(path)
     local parsed_config = nil
 
     if config == nil then
@@ -33,7 +33,9 @@ function T.parse_config(config, schema)
       if schema._dyn_default ~= nil then config = schema._dyn_default(config_key, path) end
     end
 
-    if config == nil then
+    if config == nil and schema._type == "table" then config = {} end                                                                         -- To avoid having to put default on table entries
+
+    if config == nil and schema._type ~= "nil" and not (schema._type == "union" and schema._union_types["nil"] ~= nil) then -- Latter is to allow explicit nil in config
       return false, "Missing required key: " .. path
     end
 
@@ -250,3 +252,5 @@ function T.join(config, user_config)
     end
   end
 end
+
+return T

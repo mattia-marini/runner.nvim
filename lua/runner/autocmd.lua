@@ -3,10 +3,10 @@ local function init_buffer()
   -- print("Detectato filetype ")
 
 
+  if true then return end
   local utils = require("runner.utils")
   local dprint = utils.dprint
   local ft = vim.api.nvim_get_option_value("filetype", {})
-  local global_config = require("runner.config.config")[1]
   local active_ft_config = utils.get_curr_ft_active_config()
 
 
