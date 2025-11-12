@@ -24,11 +24,15 @@ local make_ext = {
 
 local M = {}
 
+local schema_utils = require("runner.config.schema")
+local schema = require("runner.config.config")[2]
+
 local single_file = require("runner.lang.common").new()
 local make = require("runner.lang.common").new()
 
-require("runner.config.schema").join(single_file, single_file_ext)
-require("runner.config.schema").join(make, make_ext)
+schema_utils.parse_config(M, schema._t_struct.lang._values)
+schema_utils.join(single_file, single_file_ext)
+schema_utils.join(make, make_ext)
 
 M.single_file = single_file
 M.make = make

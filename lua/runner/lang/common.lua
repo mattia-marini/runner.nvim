@@ -15,8 +15,10 @@
 
 ---@class ComplexRunargSpecifier
 ---@field value string|boolean|string[]
+---@field default string|boolean|string[]
 ---@field complete? function(arglead:string, cmdline:string, cursorpos:number):string[]
----@field check? function():boolean
+---@field check? function(value:string):boolean
+---@field map? function(value:string):string
 
 return {
   ---@return BuildConfig

@@ -35,7 +35,72 @@ local schema = T:new({
             run = T:new("function"),
             buildAndRun = T:new("function"),
             mappings = T:new({}):values(T:new("function")),
-            runargs = T:new({}):values(T:new("string")),
+            runargs = T:new({})
+                :values(
+                -- TODO add string[] as supported value
+                  T:new(
+                    T:new("string"),
+                    T:new("boolean"),
+                    T:new({
+                      value = T:new(T:new("string"), T:new("boolean"), T:new({}):values(T:new("string"))):required(),
+                      default = T:new(T:new("string"), T:new("boolean")):required(),
+                      complete = T:new("function"),
+                      check = T:new("function"),
+                      map = T:new("function"),
+                    })
+                  )
+                  :map(function(key, val, path)
+                    local t_value
+                    local t_default
+                    local t_complete = function(arglead, cmdline, cursorpos) return {} end
+                    local t_check = function(value) return true end
+                    local t_map = function(value) return value end
+
+                    if type(val) == "string" then -- string
+                      t_value = val
+                      t_default = val
+                    elseif type(val) == "boolean" then -- boolean
+                      t_value = val
+                      t_default = val
+                      t_complete = function(arglead, cmdline, cursorpos) return { "true", "false" } end
+                      t_check = function(value) return value == "true" or value == "false" or value == "" end
+                      t_map = function(value)
+                        if value == "true" then
+                          return true
+                        elseif value == "false" then
+                          return false
+                        elseif value == "" then
+                          return true
+                        else
+                          return value
+                        end
+                      end
+                    elseif type(val) == "table" then --table
+                      t_value = val.value
+                      t_default = val.default
+                      if val.complete == nil then
+                        if type(val.value) == "boolean" then
+                          t_complete = function(arglead, cmdline, cursorpos) return { "true", "false" } end
+                        elseif type(val.value) == "string" then
+                        end
+                      end
+                      if val.check == nil then
+                        if type(val.value) == "boolean" then
+                          t_check = function(value) return value == "true" or value == "false" or value == "" end
+                        elseif type(val.value) == "string" then
+                        end
+                      end
+                    end
+
+                    return {
+                      value = t_value,
+                      default = t_default,
+                      complete = t_complete,
+                      check = t_check,
+                      map = t_map
+                    }
+                  end)
+                ),
             runargsBase = T:new("string")
           })
           :map(function(key, val, path)
