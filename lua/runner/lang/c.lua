@@ -1,7 +1,3 @@
--- local single_file = require("runner.lang.common").new()
--- local make = require("runner.lang.common").new()
-
-
 local single_file_ext = {
   single_file = true,
   root = function() return vim.api.nvim_buf_get_name(0) end,
@@ -30,8 +26,10 @@ local M = {}
 
 local single_file = require("runner.lang.common").new()
 local make = require("runner.lang.common").new()
+
 require("runner.config.schema").join(single_file, single_file_ext)
 require("runner.config.schema").join(make, make_ext)
+
 M.single_file = single_file
 M.make = make
 M.active_conf = "single_file"
