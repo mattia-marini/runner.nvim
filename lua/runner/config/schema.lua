@@ -43,8 +43,8 @@ function T.parse_config(config, schema)
     --
     -- Union type
     if schema._type == "union" then
-      local curr_type_schema = schema._union_types[type(config)]
-      if curr_type_schema == nil then
+      local curr_type_schemas = schema._union_types[type(config)]
+      if curr_type_schemas == nil then
         local union_types = {}
         for k in pairs(schema._union_types) do table.insert(union_types, k) end
         table.sort(union_types)
@@ -52,10 +52,17 @@ function T.parse_config(config, schema)
         return false, "Value at " .. path .. " should be one of " .. table.concat(union_types, "|")
       end
 
-      if curr_type_schema ~= nil then
+      local has_matching_schema = false
+      for _, curr_type_schema in ipairs(curr_type_schemas) do
         local rv, rv2 = parse_config_rec(config_key, config, curr_type_schema, path)
-        if rv == false then return false, rv2 end
-        parsed_config = rv2
+        if rv == true then
+          has_matching_schema = true
+          parsed_config = rv2
+          break;
+        end
+      end
+      if not has_matching_schema then
+        return false, "Value at " .. path .. " does not match any schema in the union"
       end
       --
       --
@@ -165,7 +172,8 @@ function T:new(...)
     rv = { _type = "union", _union_types = {} }
     for i, t in ipairs({ ... }) do
       if getmetatable(t) ~= T then error("Invalid argument to T:new") end
-      rv._union_types[t._type] = t
+      if rv._union_types[t._type] == nil then rv._union_types[t._type] = {} end
+      table.insert(rv._union_types[t._type], t)
     end
   end
 
