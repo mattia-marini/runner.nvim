@@ -5,9 +5,17 @@
 ---@field _values T? Schema for dynamic values in tables
 ---@field _validate fun(config_key: any, config: any, path: string): boolean, string? Additional validation function
 ---@field _map fun(config_key: any, parsed_config: any, path: string): any Function to map the value
----@field _required boolean? Whether this field is required
 local T = {}
 T.__index = T
+
+local inspect = require("inspect").inspect
+
+local function set_union(set1, set2)
+  local rv = {}
+  for k, v in pairs(set1) do rv[k] = v end
+  for k, v in pairs(set2) do rv[k] = v end
+  return rv
+end
 
 ---Check if a config matches the schema and parses it, applying any mapping functions
 ---@param config any The config value to check
@@ -17,8 +25,23 @@ T.__index = T
 function T.parse_config(config, schema)
   ---@diagnostic disable-next-line: redefined-local
   local function parse_config_rec(config_key, config, schema, path)
+    -- print(path)
     local parsed_config = nil
 
+    if config == nil then
+      if schema._default ~= nil then config = schema._default end
+      if schema._dyn_default ~= nil then config = schema._dyn_default(config_key, path) end
+    end
+
+    if config == nil then
+      return false, "Missing required key: " .. path
+    end
+
+    --
+    --
+    --
+    --
+    -- Union type
     if schema._type == "union" then
       local curr_type_schema = schema._union_types[type(config)]
       if curr_type_schema == nil then
@@ -34,45 +57,66 @@ function T.parse_config(config, schema)
         if rv == false then return false, rv2 end
         parsed_config = rv2
       end
+      --
+      --
+      --
+      --
+      -- Table type
     elseif schema._type == "table" then
       parsed_config = {}
       if type(config) ~= "table" then
         return false, "Value at " .. path .. " should be a table"
       end
-      local config_keys = {}
-      for key, val in pairs(config) do
-        config_keys[key] = true
 
-        -- User added keys
-        if schema._t_struct[key] == nil then
-          -- Unresolved key in config
-          if schema._values == nil then
-            return false, "Unresolved key: " .. key .. "(" .. path .. ")"
+      local schema_defined_keys, user_added_keys = {}, {}
+      for key, key_schema in pairs(schema._t_struct) do schema_defined_keys[key] = true end
+      for key, val in pairs(config) do if schema_defined_keys[key] == nil then user_added_keys[key] = val end end
+
+      local default_values = nil
+      if schema._default_values ~= nil then default_values = schema._default_values end
+      if schema._dyn_default_values ~= nil then default_values = schema._dyn_default_values() end -- Prefer dyn values if present
+
+      if default_values ~= nil and schema._values == nil then
+        return false, "No schema defined for dynamic values at " .. path
+      end
+
+      local default_values_keys = {}
+      if default_values ~= nil then
+        for key, val in pairs(default_values) do
+          -- Add only if not present, prefer user values
+          if not user_added_keys[key] and not schema_defined_keys[key] then
+            default_values_keys[key] = true
+            config[key] = val
           end
-
-          -- Values are checked against T type
-          if getmetatable(schema._values) == T then
-            local rv, rv2 = parse_config_rec(key, config[key], schema._values, path .. "." .. key)
-            if rv == false then return false, rv2 end
-            parsed_config[key] = rv2
-          end
-        end
-
-        -- Schema defined keys
-        if schema._t_struct[key] ~= nil then
-          local rv, rv2 = parse_config_rec(key, config[key], schema._t_struct[key], path .. "." .. key)
-          if rv == false then return false, rv2 end
-          parsed_config[key] = rv2
         end
       end
 
-      for key, val in pairs(schema._t_struct) do
-        if schema._t_struct[key]._required == true and config_keys[key] == nil then
-          return false, "Missing required key: " .. path .. "." .. key
-        end
+      for schema_key in pairs(schema_defined_keys) do
+        local rv, rv2 = parse_config_rec(schema_key, config[schema_key], schema._t_struct[schema_key],
+          path .. "." .. schema_key)
+        if rv == false then return false, rv2 end
+        parsed_config[schema_key] = rv2
       end
-    elseif type(config) == "any" then
+
+
+      for added_key, _ in pairs(set_union(user_added_keys, default_values_keys)) do
+        local rv, rv2 = parse_config_rec(added_key, config[added_key], schema._values,
+          path .. "." .. added_key)
+        if rv == false then return false, rv2 end
+        parsed_config[added_key] = rv2
+      end
+      --
+      --
+      --
+      --
+      -- Any type
+    elseif schema._type == "any" then
       parsed_config = config
+      --
+      --
+      --
+      --
+      -- Atomic type
     else
       if type(config) ~= schema._type then
         return false, "Value at " .. path .. " should be " .. schema._type
@@ -144,20 +188,43 @@ function T:validate(validate)
   return self
 end
 
----Mark this field as required or optional
----@param required boolean? Whether this field is required (defaults to true)
----@return T self Returns self for method chaining
-function T:required(required)
-  if required == nil then required = true end
-  self._required = required
-  return self
-end
-
 ---Set a mapping function to transform the parsed value
 ---@param map fun(config_key: any, parsed_config: any, path: string): any Function to transform the parsed config
 ---@return T self Returns self for method chaining
 function T:map(map)
   self._map = map
+  return self
+end
+
+--- Set a default value for this schema
+---@param default_value any The default value to use if none is provided
+---@return T self Returns self for method chaining
+function T:default(default_value)
+  self._default = default_value
+  return self
+end
+
+--- Set a dynamic default value for this schema
+---@param dyn_default_value function(config_key: string, path: string):any
+---@return T self Returns self for method chaining
+function T:dyn_default(dyn_default_value)
+  self._dyn_default = dyn_default_value
+  return self
+end
+
+--- Set a default value for this schema
+---@param default_values any The default value to use if none is provided
+---@return T self Returns self for method chaining
+function T:default_values(default_values)
+  self._default_values = default_values
+  return self
+end
+
+--- Set values to be inserted into a table implementing values
+---@param dyn_default_values function(config_key: string, path: string):any
+---@return T self Returns self for method chaining
+function T:dyn_default_values(dyn_default_values)
+  self._dyn_default_values = dyn_default_values
   return self
 end
 
@@ -175,5 +242,3 @@ function T.join(config, user_config)
     end
   end
 end
-
-return T
