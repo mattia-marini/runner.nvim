@@ -5,11 +5,7 @@ local function init_buffer()
   local utils = require("runner.utils")
 
   if utils.is_curr_ft_ignored() then return end
-
-  if true then return end
-
   if not utils.is_curr_ft_supported() then return end
-
 
   local active_ft_config = utils.get_curr_ft_active_config()
   local global_config = utils.get_global_config()
@@ -19,15 +15,16 @@ local function init_buffer()
 
     local runargs = utils.get_curr_runargs()
     if runargs == nil or runargs[key] == nil then
-      utils.dprint("Invalid runarg key \"" .. key .. "\"", vim.log.levels.ERROR)
+      utils.dprint("Invalid runarg key \"" .. key .. "\"", vim.log.levels.WARN)
       return
     end
 
-    local second_arg = args.args:match("^%s*%S+%s+%S+%s*(.-)%s*$")
+    -- print("args.args:", args.args)
+    local second_arg = args.args:match("^%s*%S+%s*(.-)%s*$")
     -- print("second arg:", second_arg)
 
     if not runargs[key].check(second_arg) then
-      utils.dprint("Invalid runarg value \"" .. second_arg .. "\" for key \"" .. key .. "\"", vim.log.levels.ERROR)
+      utils.dprint("Invalid runarg value \"" .. second_arg .. "\" for key \"" .. key .. "\"", vim.log.levels.WARN)
       return
     end
 

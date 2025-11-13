@@ -1,10 +1,12 @@
 local M = {};
 
-function M.dprint(message, log_level)
+function M.dprint(message, log_level, debug)
+  if debug == nil then debug = false end
+
   local global_config = M.get_global_config()
-  if global_config.debug then
+  if not debug or (debug and global_config.debug) then
     vim.notify(
-      message,
+      "[runner.nvim]: " .. message,
       log_level
     )
   end

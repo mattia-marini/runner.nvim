@@ -42,7 +42,7 @@ end
 function T.parse_config(config, schema)
   ---@diagnostic disable-next-line: redefined-local
   local function parse_config_rec(config_key, config, schema, path)
-    print(path)
+    -- print(path)
     local parsed_config = nil
 
     if config == nil then

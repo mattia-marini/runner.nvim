@@ -1,12 +1,11 @@
 local single_file_ext = {
   single_file = true,
   root = function() return vim.api.nvim_buf_get_name(0) end,
-  ---@class RunnerSingleFileRunargs
   runargs = { executable = "a.out", args = "" },
-  ---@type fun(args: RunnerCArgs, runargs: RunnerSingleFileRunargs): string
+  ---@type fun(args: RunnerCArgs, runargs: table<string,table<string>>): string
   build_and_run = function(args, runargs)
     return "cd " ..
-        args.single_file.root() .. " && clang " .. args.common.curr_file_name() .. " -o " .. runargs.executable
+        args.single_file.root() .. " && clang " .. args.common.curr_file_name() .. " -o " .. runargs.executable.value
   end
 }
 
@@ -14,11 +13,10 @@ local single_file_ext = {
 local make_ext = {
   single_file = false,
   root = function() return vim.fs.root(0, "Makefile") end,
-  ---@class RunnerMakeRunargs
   runargs = { target = "ALL", args = "" },
-  ---@type fun(args: RunnerCArgs, runargs: RunnerMakeRunargs): string
+  ---@type fun(args: RunnerCArgs, runargs: table<string,table<string>>): string
   build_and_run = function(args, runargs)
-    return "cd " .. args.make.root() .. " && make " .. runargs.target .. " && ./" .. runargs.target
+    return "cd " .. args.make.root() .. " && make " .. runargs.target .. " && ./" .. runargs.target.value
   end
 }
 

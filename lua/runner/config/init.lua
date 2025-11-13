@@ -75,7 +75,7 @@ local schema = T:new({
                       value = T:new(T:new("string"), T:new("boolean"), T:new("nil")):default(nil),
                       complete = T:new(T:new("function"), T:new("nil")):default(nil),
                       check = T:new(T:new("function"), T:new("nil")):default(nil),
-                      map = T:new(T:new("function"), T:new("nil")):default(function(key, val, path) return val end)
+                      map = T:new(T:new("function"), T:new("nil")):default(function(val) return val end)
                     })
                     :map(function(key, val, path)
                       val.value = val.default
