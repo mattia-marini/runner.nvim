@@ -2,50 +2,40 @@ local function init_buffer()
   -- print(string.format('event fired: %s', vim.inspect(ev)))
   -- print("Detectato filetype ")
 
+  local utils = require("runner.utils")
+
+  if utils.is_curr_ft_ignored() then return end
 
   if true then return end
-  local utils = require("runner.utils")
-  local dprint = utils.dprint
-  local ft = vim.api.nvim_get_option_value("filetype", {})
+
+  if not utils.is_curr_ft_supported() then return end
+
+
   local active_ft_config = utils.get_curr_ft_active_config()
-
-
-  if not active_ft_config then
-    if not global_config.ignored_fts[ft] then
-      dprint(
-        "[runner.nvim] The current filetype (" ..
-        ft .. ") is not supported out of the box. Add the supported field in the config if you know what you are doing"
-        , vim.log.levels.INFO)
-    end
-    return
-  end
-
+  local global_config = utils.get_global_config()
 
   vim.api.nvim_buf_create_user_command(0, "Runargs", function(args)
     local key = args.fargs[1]
 
-    local runargs = require("runner.args.runargs").get()
+    local runargs = utils.get_curr_runargs()
     if runargs == nil or runargs[key] == nil then
-      dprint("Invalid runarg key \"" .. key .. "\"", vim.log.levels.ERROR)
+      utils.dprint("Invalid runarg key \"" .. key .. "\"", vim.log.levels.ERROR)
       return
     end
 
     local second_arg = args.args:match("^%s*%S+%s+%S+%s*(.-)%s*$")
-    print("second arg:", second_arg)
+    -- print("second arg:", second_arg)
 
     if not runargs[key].check(second_arg) then
-      dprint("Invalid runarg value \"" .. second_arg .. "\" for key \"" .. key .. "\"", vim.log.levels.ERROR)
+      utils.dprint("Invalid runarg value \"" .. second_arg .. "\" for key \"" .. key .. "\"", vim.log.levels.ERROR)
       return
     end
-    runargs[key].map(second_arg)
+
     runargs[key].value = runargs[key].map(second_arg)
-    -- local conf = vim.api.nvim_buf_get_var(0, "runnerArgs")
-    -- conf.default.args = args.args
-    -- vim.api.nvim_buf_set_var(0, "runnerArgs", conf)
   end, {
     nargs = "*",
     complete = function(arglead, cmdline, cursorpos)
-      local runargs = require("runner.utils").get_curr_ft_active_config().runargs
+      local runargs = utils.get_curr_ft_active_config().runargs
       local runarg_keys = {}
       for key, _ in pairs(runargs) do table.insert(runarg_keys, key) end
       local argv = vim.split(cmdline, "%s+")

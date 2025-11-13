@@ -48,7 +48,7 @@ end
 local function runWithBufferConfig()
   local runnerArgs = vim.api.nvim_buf_get_var(0, "runnerArgs")
   local ft = vim.api.nvim_get_option_value("filetype", {})
-  local config = require('runner.config.config').lang[ft]
+  local config = require('runner.config').lang[ft]
 
   local cmd = config.buildAndRun(runnerArgs)
   runInTerminal(cmd)

@@ -7,7 +7,7 @@
 ---@type RunnerConfig
 local config = {}
 
-local T = require("runner.config.schema")
+local T = require("runner.config.schema_utils")
 
 local schema = T:new({
   mappings = T:new({}):values(T:new("function"))
@@ -135,4 +135,4 @@ local schema = T:new({
       :default_values(require("runner.lang"))
 })
 
-return { config, schema }
+return { config = config, schema = schema }

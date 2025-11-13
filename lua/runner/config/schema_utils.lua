@@ -8,7 +8,7 @@
 local T = {}
 T.__index = T
 
-local inspect = require("inspect").inspect
+-- local inspect = require("inspect").inspect
 
 local function set_union(set1, set2)
   local rv = {}

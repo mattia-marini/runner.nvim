@@ -11,7 +11,17 @@ function M.dprint(message, log_level)
 end
 
 function M.get_global_config()
-  return require("runner.config")[1]
+  return require("runner.config").config
+end
+
+function M.is_curr_ft_supported()
+  local ft = vim.api.nvim_get_option_value("filetype", {})
+  return M.get_global_config().lang[ft] ~= nil
+end
+
+function M.is_curr_ft_ignored()
+  local ft = vim.api.nvim_get_option_value("filetype", {})
+  return M.get_global_config().ignored_fts[ft] ~= nil
 end
 
 ---@return table<string, BuildConfig>
@@ -24,6 +34,10 @@ function M.get_curr_ft_active_config()
   local ft_config = M.get_curr_ft_config()
   if not ft_config then return nil end
   return ft_config[ft_config.active_conf]
+end
+
+function M.get_curr_runargs()
+  return M.get_curr_ft_active_config().runargs
 end
 
 return M
