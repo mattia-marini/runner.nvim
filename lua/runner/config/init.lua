@@ -1,8 +1,24 @@
 ---@class RunnerConfig
+---@field run_mode table<string, function> Key mappings for starting and stopping the runner
 ---@field mappings table<string, function> Key mappings for starting and stopping the runner
 ---@field debug boolean Enable debug mode
 ---@field ignored_fts table<string, boolean> Filetypes on which runner.nvim should not activate
 ---@field lang table<string, table<string, BuildConfig>> Language specific configurations
+
+---@class RunnerRunMode
+---@field mode "neovim"|"kitty"
+---@field opts RunnerRunModeNeovim|RunnerRunModeKitty
+
+---@class RunnerRunModeKitty
+---@field shell "fish"|"bash"|"zsh"|"sh"|string
+---@field type "background"|"clipboard"|"os-panel"|"os-window"|"overlay"|"overlay-main"|"primary"|"tab"|"window"
+---@field other? string Other kitty options
+---@field title? string
+---@field cwd? string|"current"
+---@field keep_focus? boolean
+---@field wait_for_child_to_exit? boolean
+
+---@class RunnerRunModeNeovim
 
 ---@type RunnerConfig
 local config = {}
