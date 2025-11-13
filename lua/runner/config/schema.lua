@@ -17,6 +17,23 @@ local function set_union(set1, set2)
   return rv
 end
 
+local function dict_size(dict)
+  local key_count = 0
+  for _, _ in pairs(dict) do key_count = key_count + 1 end
+  return key_count
+end
+
+local function to_array(dict, pos)
+  if pos == nil then pos = 1 end
+  if pos > 2 or pos < 1 then error("pos must be 1 or 2") end
+  local rv = {}
+  for k, v in pairs(dict) do
+    local p = { k, v }
+    table.insert(rv, p[pos])
+  end
+  return rv
+end
+
 ---Check if a config matches the schema and parses it, applying any mapping functions
 ---@param config any The config value to check
 ---@param schema T The schema to validate against
@@ -33,7 +50,7 @@ function T.parse_config(config, schema)
       if schema._dyn_default ~= nil then config = schema._dyn_default(config_key, path) end
     end
 
-    if config == nil and schema._type == "table" then config = {} end                                                                         -- To avoid having to put default on table entries
+    if config == nil and schema._type == "table" then config = {} end                                                       -- To avoid having to put default on table entries
 
     if config == nil and schema._type ~= "nil" and not (schema._type == "union" and schema._union_types["nil"] ~= nil) then -- Latter is to allow explicit nil in config
       return false, "Missing required key: " .. path
@@ -79,14 +96,19 @@ function T.parse_config(config, schema)
 
       local schema_defined_keys, user_added_keys = {}, {}
       for key, key_schema in pairs(schema._t_struct) do schema_defined_keys[key] = true end
-      for key, val in pairs(config) do if schema_defined_keys[key] == nil then user_added_keys[key] = val end end
+      for key, val in pairs(config) do if schema_defined_keys[key] == nil then user_added_keys[key] = true end end
 
-      local default_values = nil
+      local default_values = {}
       if schema._default_values ~= nil then default_values = schema._default_values end
       if schema._dyn_default_values ~= nil then default_values = schema._dyn_default_values() end -- Prefer dyn values if present
 
-      if default_values ~= nil and schema._values == nil then
-        return false, "No schema defined for dynamic values at " .. path
+      if (dict_size(default_values) ~= 0 or dict_size(user_added_keys) ~= 0) and schema._values == nil then
+        local from_default = table.concat(to_array(default_values), ", ")
+        local from_user = table.concat(to_array(user_added_keys), ", ")
+
+        return false, "Unexpected keys at " .. path ..
+            "\nFrom default config: " .. from_default ..
+            "\nFrom user config: " .. from_user
       end
 
       local default_values_keys = {}

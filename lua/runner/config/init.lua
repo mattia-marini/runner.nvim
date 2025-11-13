@@ -30,10 +30,11 @@ local schema = T:new({
           active_conf = T:new(T:new("string"), T:new("nil")):default(nil)
         })
         :values(T:new({
+            single_file = T:new("boolean"):default(false),
             root = T:new("function"):default(function() return nil end),
             build = T:new("function"):default(function() return "" end),
             run = T:new("function"):default(function() return "" end),
-            buildAndRun = T:new("function"):default(function() return "" end),
+            build_and_run = T:new("function"):default(function() return "" end),
             mappings = T:new({}):values(T:new("function")),
             runargs = T:new({})
                 :values(

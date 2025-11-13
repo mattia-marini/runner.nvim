@@ -6,10 +6,6 @@
 ---@field build_and_run fun(args:table<string, any>, runargs: table<string, string>):string Function that returns the command to build and run the project
 ---@field mappings table<string, function> Key mappings specific to this language
 ---@field runargs table<string, RunargSpecifier> Additional user-provided arguments, set with :Runargs
----@field runargs_base fun():string|"root"|"buffer"  Where to store the application args set by the :Runargs command.
----buffer: store in buffer variable
----root: store based on project root
----if a function is provided, it will be called to determine where to store the args
 
 ---@alias RunargSpecifier string|boolean|string[]|ComplexRunargSpecifier
 
@@ -37,7 +33,6 @@ return {
       end,
       mappings = {},
       runargs = {},
-      runargs_base = "root",
     }
   end
 }
