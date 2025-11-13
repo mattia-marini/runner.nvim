@@ -1,5 +1,5 @@
 ---@class RunnerConfig
----@field run_mode table<string, function> Key mappings for starting and stopping the runner
+---@field run_mode RunnerRunMode Configuration for how to run commands
 ---@field mappings table<string, function> Key mappings for starting and stopping the runner
 ---@field debug boolean Enable debug mode
 ---@field ignored_fts table<string, boolean> Filetypes on which runner.nvim should not activate
@@ -12,11 +12,13 @@
 ---@class RunnerRunModeKitty
 ---@field shell "fish"|"bash"|"zsh"|"sh"|string
 ---@field type "background"|"clipboard"|"os-panel"|"os-window"|"overlay"|"overlay-main"|"primary"|"tab"|"window"
----@field other? string Other kitty options
 ---@field title? string
 ---@field cwd? string|"current"
+---@field hold? boolean
 ---@field keep_focus? boolean
----@field wait_for_child_to_exit? boolean
+---@field copy_env? boolean
+---@field other? string|string[] Other kitty options
+---@field custom? function(cmd: string, open_kitty_window_pid:number?):string[] A command that overrides the options above. Receives the command to run as argument and must return the full command to execute.
 
 ---@class RunnerRunModeNeovim
 

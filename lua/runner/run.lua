@@ -55,6 +55,65 @@ local function runWithBufferConfig()
 end
 
 
+local function append(t1, t2)
+  for k, v in ipairs(t2) do table.insert(t1, v) end
+end
+
+local open_kitty_window_pid = nil
+local function run_kitty(cmd)
+  local run_mode   = require("runner.utils").get_global_config().run_mode
+  local opts       = run_mode.opts
+
+  local system_cmd = {}
+  if opts.custom ~= nil then
+    system_cmd = opts.custom(cmd)
+  else
+    if open_kitty_window_pid ~= nil then
+      append(system_cmd, {
+        "kitten", "@", "close-window",
+        "--ignore-no-match",
+        "--match=id:" .. open_kitty_window_pid
+      })
+    end
+
+    append(system_cmd, {
+      "kitten", "@", "launch",
+      "--title=" .. opts.title,
+      "--type=" .. opts.type,
+      "--cwd=" .. opts.cwd,
+      opts.keep_focus and "--keep-focus" or "",
+      opts.copy_env and "--copy-env" or "",
+      opts.hold and "--hold" or "",
+    })
+
+    local other = opts.other
+    if type(other) == "table" then
+      for _, v in ipairs(other) do table.insert(system_cmd, v) end
+    elseif type(other) == "string" then
+      for flag in other:gmatch("%S+") do
+        table.insert(system_cmd, flag)
+      end
+    end
+
+    append(system_cmd, { opts.shell, "-c", cmd })
+  end
+
+
+
+  vim.system(system_cmd, {},
+    function(obj)
+      if obj.code ~= 0 then
+        dprint("Failed to run kitty cmd " .. obj.stderr)
+        return
+      else
+        open_kitty_window_pid = tonumber(obj.stdout)
+      end
+    end)
+
+  -- kitten @ launch --title=Email --type=tab --copy-env --hold --cwd=current fish -c "echo ciao && echo ciao2"
+  -- kitten @ close-window --ignore-no-match --match=id:30
+end
+
 local function start()
   local ft_config = require("runner.utils").get_curr_ft_active_config()
   if not ft_config then
@@ -67,7 +126,9 @@ local function start()
 
   local cmd = ft_config.build_and_run(args, runargs)
 
+  local cmd = "echo hello from runner"
   print(cmd)
+  run_kitty(cmd)
 end
 
 local function stop()
