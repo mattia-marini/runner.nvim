@@ -159,10 +159,11 @@ local function start()
     return
   end
 
-  local args = require("runner.args")[vim.api.nvim_get_option_value("filetype", {})]
+  local args = require("runner.args")[vim.api.nvim_get_option_value("filetype", {})] or {}
   local runargs = ft_config.runargs
 
   local cmd = ft_config.build_and_run(args, runargs)
+  if cmd == nil then return end
 
   -- local cmd = "echo hello from runner"
 

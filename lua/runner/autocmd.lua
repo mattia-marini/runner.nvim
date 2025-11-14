@@ -23,12 +23,23 @@ local function init_buffer()
     local second_arg = args.args:match("^%s*%S+%s*(.-)%s*$")
     -- print("second arg:", second_arg)
 
-    if not runargs[key].check(second_arg) then
-      utils.dprint("Invalid runarg value \"" .. second_arg .. "\" for key \"" .. key .. "\"", vim.log.levels.WARN)
-      return
+    if runargs[key].check then
+      if not runargs[key].check(second_arg) then
+        utils.dprint("Invalid runarg value \"" .. second_arg .. "\" for key \"" .. key .. "\"", vim.log.levels.WARN)
+        return
+      end
     end
 
-    runargs[key].value = runargs[key].map(second_arg)
+
+
+    local mapped_value
+    if runargs[key].map then
+      mapped_value = runargs[key].map(second_arg)
+    else
+      mapped_value = second_arg
+    end
+
+    runargs[key].value = mapped_value
   end, {
     nargs = "*",
     complete = function(arglead, cmdline, cursorpos)
@@ -43,8 +54,13 @@ local function init_buffer()
         if runarg_specifier == nil then
           return {}
         end
-        -- Parsed config alway has ComplexRunargSpecifier as value
-        return runarg_specifier.complete(arglead, cmdline, cursorpos)
+
+        local second_arg = cmdline:match("^%s*%S+%s+%S+%s*(.-)%s*$")
+        if runarg_specifier.complete then
+          return runarg_specifier.complete(arglead, cmdline, cursorpos, second_arg)
+        else
+          return {}
+        end
       end
     end
   })

@@ -106,7 +106,7 @@ local schema = T:new({
                       }
                     end),
                     T:new({
-                      default = T:new(T:new("string"), T:new("boolean")),
+                      default = T:new(T:new("string"), T:new("boolean"), T:new("nil")):default(nil),
                       value = T:new(T:new("string"), T:new("boolean"), T:new("nil")):default(nil),
                       complete = T:new(T:new("function"), T:new("nil")):default(nil),
                       check = T:new(T:new("function"), T:new("nil")):default(nil),
