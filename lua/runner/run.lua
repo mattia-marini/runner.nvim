@@ -54,12 +54,20 @@ local function runWithBufferConfig()
   runInTerminal(cmd)
 end
 
+local function run_neovim(cmd)
+  dprint("Native neovim terminal is currently unsupported", vim.log.levels.ERROR)
+end
+
+local function stop_neovim()
+  dprint("Native neovim terminal is currently unsupported", vim.log.levels.ERROR)
+end
+
+
+local open_kitty_window_pid = nil
 
 local function append(t1, t2)
   for k, v in ipairs(t2) do table.insert(t1, v) end
 end
-
-local open_kitty_window_pid = nil
 
 local function stop_kitty()
   if open_kitty_window_pid == nil then
@@ -157,8 +165,15 @@ local function start()
   local cmd = ft_config.build_and_run(args, runargs)
 
   -- local cmd = "echo hello from runner"
-  print(cmd)
-  run_kitty(cmd)
+
+  dprint("Running command: " .. cmd, vim.log.levels.INFO)
+
+  local run_mode = require("runner.config").config.run_mode.mode
+  if run_mode == "neovim" then
+    run_neovim(cmd)
+  elseif run_mode == "kitty" then
+    run_kitty(cmd)
+  end
 end
 
 local function stop()
@@ -168,7 +183,12 @@ local function stop()
     return
   end
 
-  stop_kitty()
+  local run_mode = require("runner.config").config.run_mode.mode
+  if run_mode == "neovim" then
+    stop_neovim()
+  elseif run_mode == "kitty" then
+    stop_kitty()
+  end
 end
 
 return {
