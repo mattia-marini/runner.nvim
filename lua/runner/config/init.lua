@@ -12,8 +12,8 @@
 ---@class RunnerRunModeKitty
 ---@field shell "fish"|"bash"|"zsh"|"sh"|string
 ---@field type "background"|"clipboard"|"os-panel"|"os-window"|"overlay"|"overlay-main"|"primary"|"tab"|"window"
----@field title? string
----@field cwd? string|"current"
+---@field title? string|function():string
+---@field cwd? string|"current"|function():string
 ---@field hold? boolean
 ---@field keep_focus? boolean
 ---@field copy_env? boolean
@@ -28,6 +28,23 @@ local config = {}
 local T = require("runner.config.schema_utils")
 
 local schema = T:new({
+  run_mode = T:new({
+    mode = T:new("string"):default("kitty"),
+    opts = T:new({
+      shell = T:new("string"):default("fish"),
+      type = T:new("string"):default("tab"),
+      title = T:new("string"):default("runner.nvim"),
+      cwd = T:new("string"):default("current"),
+      hold = T:new("boolean"):default(true),
+      keep_focus = T:new("boolean"):default(false),
+      copy_env = T:new("boolean"):default(true),
+      custom = T:new(T:new("function"), T:new("nil")):default(nil),
+      other = T:new(
+        T:new("string"),
+        T:new({}):values(T:new("string"))
+      ):default(""),
+    })
+  }),
   mappings = T:new({}):values(T:new("function"))
       :default_values({
         ["<Space>r"] = require("runner.run").start,

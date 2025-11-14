@@ -5,7 +5,8 @@ local single_file_ext = {
   ---@type fun(args: RunnerCArgs, runargs: table<string,table<string>>): string
   build_and_run = function(args, runargs)
     return "cd " ..
-        args.single_file.root() .. " && clang " .. args.common.curr_file_name() .. " -o " .. runargs.executable.value
+        args.single_file.root() .. " && clang " .. args.common.curr_file_name() .. " -o " .. runargs.executable.value ..
+        " && " .. "./" .. runargs.executable.value .. " " .. runargs.args.value
   end
 }
 

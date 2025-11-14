@@ -61,46 +61,52 @@ end
 
 local open_kitty_window_pid = nil
 local function run_kitty(cmd)
-  local run_mode   = require("runner.utils").get_global_config().run_mode
-  local opts       = run_mode.opts
+  local run_mode      = require("runner.utils").get_global_config().run_mode
+  local opts          = run_mode.opts
 
-  local system_cmd = {}
+  local run_cmd       = {}
+  local close_wnd_cmd = {}
+
+  -- print(vim.inspect(run_mode))
   if opts.custom ~= nil then
-    system_cmd = opts.custom(cmd)
+    close_wnd_cmd = opts.custom(cmd)
   else
     if open_kitty_window_pid ~= nil then
-      append(system_cmd, {
+      append(close_wnd_cmd, {
         "kitten", "@", "close-window",
         "--ignore-no-match",
         "--match=id:" .. open_kitty_window_pid
       })
     end
 
-    append(system_cmd, {
+    append(run_cmd, {
       "kitten", "@", "launch",
       "--title=" .. opts.title,
       "--type=" .. opts.type,
       "--cwd=" .. opts.cwd,
-      opts.keep_focus and "--keep-focus" or "",
-      opts.copy_env and "--copy-env" or "",
-      opts.hold and "--hold" or "",
     })
+
+    if opts.keep_focus then append(run_cmd, { "--keep-focus" }) end
+    if opts.copy_env then append(run_cmd, { "--copy-env" }) end
+    if opts.hold then append(run_cmd, { "--hold" }) end
 
     local other = opts.other
     if type(other) == "table" then
-      for _, v in ipairs(other) do table.insert(system_cmd, v) end
+      for _, v in ipairs(other) do table.insert(run_cmd, v) end
     elseif type(other) == "string" then
       for flag in other:gmatch("%S+") do
-        table.insert(system_cmd, flag)
+        table.insert(run_cmd, flag)
       end
     end
 
-    append(system_cmd, { opts.shell, "-c", cmd })
+    append(run_cmd, { opts.shell, "-c", cmd })
   end
 
+  if open_kitty_window_pid ~= nil then
+    local rv = vim.system(close_wnd_cmd, {})
+  end
 
-
-  vim.system(system_cmd, {},
+  vim.system(run_cmd, {},
     function(obj)
       if obj.code ~= 0 then
         dprint("Failed to run kitty cmd " .. obj.stderr)
@@ -126,7 +132,7 @@ local function start()
 
   local cmd = ft_config.build_and_run(args, runargs)
 
-  local cmd = "echo hello from runner"
+  -- local cmd = "echo hello from runner"
   print(cmd)
   run_kitty(cmd)
 end
