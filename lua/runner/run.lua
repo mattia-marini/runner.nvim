@@ -60,6 +60,30 @@ local function append(t1, t2)
 end
 
 local open_kitty_window_pid = nil
+
+local function stop_kitty()
+  if open_kitty_window_pid == nil then
+    dprint("No runner.nvim process to stop", vim.log.levels.INFO, true)
+    return
+  end
+
+  local stop_cmd = {
+    "kitten", "@", "close-window",
+    "--ignore-no-match",
+    "--match=id:" .. open_kitty_window_pid
+  }
+
+  vim.system(stop_cmd, {},
+    function(obj)
+      if obj.code ~= 0 then
+        vim.schedule(function() dprint("Failed to run kitty cmd " .. obj.stderr) end)
+        return
+      else
+        open_kitty_window_pid = tonumber(obj.stdout)
+      end
+    end)
+end
+
 local function run_kitty(cmd)
   local run_mode      = require("runner.utils").get_global_config().run_mode
   local opts          = run_mode.opts
@@ -109,7 +133,7 @@ local function run_kitty(cmd)
   vim.system(run_cmd, {},
     function(obj)
       if obj.code ~= 0 then
-        dprint("Failed to run kitty cmd " .. obj.stderr)
+        vim.schedule(function() dprint("Failed to run kitty cmd " .. obj.stderr) end)
         return
       else
         open_kitty_window_pid = tonumber(obj.stdout)
@@ -138,6 +162,13 @@ local function start()
 end
 
 local function stop()
+  local ft_config = require("runner.utils").get_curr_ft_active_config()
+  if not ft_config then
+    dprint("No configuration found for current filetype", vim.log.levels.ERROR)
+    return
+  end
+
+  stop_kitty()
 end
 
 return {
