@@ -5,13 +5,13 @@ local single_file = {
   ---@type fun(args: RunnerPythonArgs, runargs: table<string,table<string>>): string?
   build_and_run = function(args, runargs)
     return "cd " ..
-        args.common.curr_file_dir .. " && " .. runargs.python .. " " .. args.common.curr_file_name .. " " .. runargs
-        .args
+        args.common.curr_file_dir() ..
+        " && " .. runargs.python.value .. " " .. args.common.curr_file_name() .. " " .. runargs
+        .args.value
   end
 }
 
 
-local x = 0
 local venv = {
   single_file = false,
   root = function() return vim.fs.root(0, { "pyproject.toml", "requirements.txt", ".venv", "venv" }) end,
@@ -21,7 +21,6 @@ local venv = {
     args = "",
     entry_point = {
       complete = function(arglead, cmdline, cursorpos, second_arg)
-        print(arglead)
         local root = require("runner.args.python").venv.root()
         if not root then return {} end
         local curr_dir = vim.fs.joinpath(root, vim.fs.dirname(second_arg))
