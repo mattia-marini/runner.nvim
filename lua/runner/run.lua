@@ -153,6 +153,7 @@ local function run_kitty(cmd)
 end
 
 local function start()
+  local config = require("runner.config").config
   local ft_config = require("runner.utils").get_curr_ft_active_config()
   if not ft_config then
     dprint("No configuration found for current filetype", vim.log.levels.ERROR)
@@ -167,7 +168,10 @@ local function start()
 
   -- local cmd = "echo hello from runner"
 
-  dprint("Running command: " .. cmd, vim.log.levels.INFO)
+  if config.print_command then
+    dprint("Running command: " .. cmd, vim.log.levels.INFO)
+  end
+
 
   local run_mode = require("runner.config").config.run_mode.mode
   if run_mode == "neovim" then

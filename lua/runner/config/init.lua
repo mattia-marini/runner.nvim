@@ -1,5 +1,6 @@
 ---@class RunnerConfig
 ---@field run_mode RunnerRunMode Configuration for how to run commands
+---@field print_command boolean Print the command being run in the terminal
 ---@field mappings table<string, function> Key mappings for starting and stopping the runner
 ---@field debug boolean Enable debug mode
 ---@field ignored_fts table<string, boolean> Filetypes on which runner.nvim should not activate
@@ -47,6 +48,7 @@ local schema = T:new({
       ):default(""),
     })
   }),
+  print_command = T:new("boolean"):default(false),
   mappings = T:new({}):values(T:new("function"))
       :default_values({
         ["<Space>r"] = require("runner.run").start,
