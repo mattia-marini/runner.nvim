@@ -1,5 +1,6 @@
 return {
   c = require("runner.lang.c"),
+  cpp = require("runner.lang.cpp"),
   python = require("runner.lang.python"),
   -- cpp = require("runner.lang.cpp"),
   -- sh = require("runner.lang.sh"),
