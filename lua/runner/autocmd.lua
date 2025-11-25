@@ -9,8 +9,17 @@ local function init_buffer()
 
   local active_ft_config = utils.get_curr_ft_active_config()
   local global_config = utils.get_global_config()
+  if not active_ft_config then return end
+
+  active_ft_config.init()
 
   vim.api.nvim_buf_create_user_command(0, "Runargs", function(args)
+    if #args.fargs < 1 then
+      vim.api.nvim_echo({ { "Runargs:", "Title" } }, false, {})
+      print(vim.inspect(utils.get_curr_runargs()))
+      return
+    end
+
     local key = args.fargs[1]
 
     local runargs = utils.get_curr_runargs()

@@ -71,6 +71,7 @@ local schema = T:new({
             run = T:new("function"):default(function() return "" end),
             build_and_run = T:new("function"):default(function() return "" end),
             mappings = T:new({}):values(T:new("function")),
+            init = T:new("function"):default(function() return end),
             runargs = T:new({})
                 :values(
                 -- TODO add string[] as supported value
