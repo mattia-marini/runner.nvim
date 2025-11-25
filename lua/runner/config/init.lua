@@ -1,5 +1,6 @@
 ---@class RunnerConfig
 ---@field run_mode RunnerRunMode Configuration for how to run commands
+---@field print_command boolean Print the command being run in the terminal
 ---@field mappings table<string, function> Key mappings for starting and stopping the runner
 ---@field debug boolean Enable debug mode
 ---@field ignored_fts table<string, boolean> Filetypes on which runner.nvim should not activate
@@ -12,6 +13,7 @@
 ---@class RunnerRunModeKitty
 ---@field shell "fish"|"bash"|"zsh"|"sh"|string
 ---@field type "background"|"clipboard"|"os-panel"|"os-window"|"overlay"|"overlay-main"|"primary"|"tab"|"window"
+---@field match? string|function():string
 ---@field title? string|function():string
 ---@field cwd? string|"current"|function():string
 ---@field hold? boolean
@@ -33,6 +35,7 @@ local schema = T:new({
     opts = T:new({
       shell = T:new("string"):default("fish"),
       type = T:new("string"):default("tab"),
+      match = T:new("string"):default("recent:0"),
       title = T:new("string"):default("runner.nvim"),
       cwd = T:new("string"):default("current"),
       hold = T:new("boolean"):default(true),
@@ -45,6 +48,7 @@ local schema = T:new({
       ):default(""),
     })
   }),
+  print_command = T:new("boolean"):default(false),
   mappings = T:new({}):values(T:new("function"))
       :default_values({
         ["<Space>r"] = require("runner.run").start,
