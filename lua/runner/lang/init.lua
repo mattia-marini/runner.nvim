@@ -2,6 +2,7 @@ return {
   c = require("runner.lang.c"),
   cpp = require("runner.lang.cpp"),
   python = require("runner.lang.python"),
+  java = require("runner.lang.java"),
   -- cpp = require("runner.lang.cpp"),
   -- sh = require("runner.lang.sh"),
   -- lua = require("runner.lang.lua"),
