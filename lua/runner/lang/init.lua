@@ -3,6 +3,7 @@ return {
   cpp = require("runner.lang.cpp"),
   python = require("runner.lang.python"),
   java = require("runner.lang.java"),
+  rust = require("runner.lang.rust"),
   -- cpp = require("runner.lang.cpp"),
   -- sh = require("runner.lang.sh"),
   -- lua = require("runner.lang.lua"),
